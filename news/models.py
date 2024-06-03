@@ -1,4 +1,5 @@
 from django.db import models
+
 from users.models import *
 
 
@@ -8,15 +9,20 @@ class News(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
 
-    STATUS_CHOICES = (
-        (1, 'Draft'),
-        (2, 'Moderation'),
-        (3, 'ReadyPublication'),
-        (3, 'Publish'),
-    )
+    class NewsStatus(models.IntegerChoices):
+        Draft = (1, 'Draft')
+        Moderation = (2, 'Moderation')
+        ReadyPublication = (3, 'ReadyPublication')
+        Publish = (4, 'Publish')
+
     status = models.IntegerField(
-        choices=STATUS_CHOICES,
+        choices=NewsStatus.choices,
+        default=NewsStatus.Draft,
         verbose_name='Статус')
 
-    author = models.ForeignKey(to=User, verbose_name='Статус')  # limit_choices_to={'group : 1'},
-    moderator = models.ForeignKey(to=User, verbose_name='Модер')  # limit_choices_to={'group : 1'},
+    author = models.ForeignKey(to=User, on_delete=models.CASCADE,
+                               related_name='authors',
+                               verbose_name='Статус')
+    moderator = models.ForeignKey(to=User, on_delete=models.CASCADE,
+                                  related_name='moderators',
+                                  verbose_name='Модер')
