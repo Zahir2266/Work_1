@@ -4,5 +4,5 @@ from users.models import *
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ["first_name", "last_name", "email", 'UserRole', ]
-    search_fields = ["first_name", "last_name", "email", 'UserRole', ]
+    list_display = ["first_name", "last_name", "email", 'role', ]
+    search_fields = ["first_name", "last_name", "email", 'role', ]

@@ -9,3 +9,8 @@ class User(AbstractUser):
         OPERATOR = 'Operator', 'Автор'
         MODERATOR = 'Moderator', 'Модер'
         READER = 'Reader', 'Пользователь'
+
+    role = models.TextField(
+        choices=UserRole.choices,
+        default=UserRole.READER,
+        verbose_name='Роль')
