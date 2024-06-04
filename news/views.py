@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import JSONParser
 from django_filters import rest_framework as filters
+from rest_framework.decorators import action
 
 from .models import News
 from .serializers import NewsSerializer
@@ -15,19 +16,51 @@ class NewsViewFilter(viewsets.ModelViewSet):
     serializer_class = NewsSerializer
     filterset_class = NewsFilter
     filter_backends = (filters.DjangoFilterBackend,)
-    # ordering_fields = ['title', 'author', 'slug']
 
-    def get_queryset(self):
-        return News.objects.filter(title='1')
 
-    def get(self, request, *args, **kwargs):
-        news = self.get_queryset()
-        serializer = NewsSerializer(news, many=True)
+class ForModeration(viewsets.ModelViewSet):
+    queryset = News.objects.all()
+    serializer_class = NewsSerializer
+
+    @action(detail=False)
+    def list_news(self, request):
+        list = News.objects.all().order_by('title')
+
+        page = self.paginate_queryset(list)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(list, many=True)
         return Response(serializer.data)
 
-    # def post(self, request, format=None):
-    #     serializer = NewsSerializer(data=request.data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    @action(detail=True, methods=['get', 'put'])
+    def do_for_moder(self, request, *args, **kwargs):
+        pk = kwargs.get("pk", None)
+
+        if not pk:
+            return Response({"errno": "Method PUT not allowed"})
+        try:
+            instance = News.objects.get(pk=pk)
+        except:
+            return Response({"error": "Object does not exists"})
+
+        serializer = NewsSerializer(data=request.data, instance=instance)
+        if serializer.is_valid():
+            if request.user.UserRole == "Operator":
+                # serializer.save()
+                return Response({"post": " Вроде норм"})
+        else:
+            return Response({"post": pk})
+
+    @action(detail=True, methods=['get', 'put'])
+    def do_for_post(self, request, *args, **kwargs):
+        if request.user.UserRole == "Moderator":
+            pass
+        pass
+
+    @action(detail=True, methods=['get', 'put'])
+    def do_post(self, request, *args, **kwargs):
+        if request.user.UserRole == "Reader":
+            pass
+        pass
