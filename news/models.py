@@ -10,10 +10,10 @@ class News(models.Model):
     content = models.TextField()
 
     class NewsStatus(models.IntegerChoices):
-        Draft = (1, 'Draft')
-        Moderation = (2, 'Moderation')
-        ReadyPublication = (3, 'ReadyPublication')
-        Publish = (4, 'Publish')
+        Draft = (1, 'Черновик')
+        Moderation = (2, 'На модерации')
+        ReadyPublication = (3, 'Готов к публикации')
+        Publish = (4, 'Опубликован')
 
     status = models.IntegerField(
         choices=NewsStatus.choices,
@@ -22,7 +22,10 @@ class News(models.Model):
 
     author = models.ForeignKey(to=User, on_delete=models.CASCADE,
                                related_name='authors',
-                               verbose_name='Статус')
+                               verbose_name='authors')
     moderator = models.ForeignKey(to=User, on_delete=models.CASCADE,
                                   related_name='moderators',
                                   verbose_name='Модер')
+
+    def __str__(self):
+        return self.title

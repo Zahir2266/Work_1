@@ -14,3 +14,6 @@ class User(AbstractUser):
         choices=UserRole.choices,
         default=UserRole.READER,
         verbose_name='Роль')
+
+    def __str__(self):
+        return self.username
