@@ -8,6 +8,7 @@ from rest_framework.decorators import action
 from .models import News
 from .serializers import NewsSerializer
 from .filters import NewsFilter
+from users.custompermission import *
 from django.http import Http404
 
 
@@ -34,32 +35,26 @@ class ForModeration(viewsets.ModelViewSet):
         serializer = self.get_serializer(list, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['get', 'put'])
+    @action(detail=True, methods=['get', 'put'], )#permissions=(IOperator,)
     def do_for_moder(self, request, *args, **kwargs):
         pk = kwargs.get("pk", None)
+        instance = News.objects.get(pk=pk)
 
-        if not pk:
-            return Response({"errno": "Method PUT not allowed"})
-        try:
-            instance = News.objects.get(pk=pk)
-        except:
-            return Response({"error": "Object does not exists"})
+        serializer = NewsSerializer(data=request.data, instance=instance) #
 
-        serializer = NewsSerializer(data=request.data, instance=instance)
         if serializer.is_valid():
-            if request.user.UserRole == "Operator":
-                # serializer.save()
-                return Response({"post": " Вроде норм"})
+            # serializer.save()
+            return Response({"post": " Вроде норм"})
         else:
             return Response({"post": pk})
 
-    @action(detail=True, methods=['get', 'put'])
+    @action(detail=True, methods=['get', 'put'], ) # permissions=(IModerator,)
     def do_for_post(self, request, *args, **kwargs):
         if request.user.UserRole == "Moderator":
             pass
         pass
 
-    @action(detail=True, methods=['get', 'put'])
+    @action(detail=True, methods=['get', 'put'], ) # permissions=(IOReader,)
     def do_post(self, request, *args, **kwargs):
         if request.user.UserRole == "Reader":
             pass
