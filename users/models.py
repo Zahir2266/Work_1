@@ -1,14 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from .custompermission import *
 
 
 class UserRole(models.TextChoices):
     """
     class containing - the main roles for working with access
     """
-    OPERATOR = 'Operator', 'Автор'
+    AUTHOR = 'Author', 'Автор'
     MODERATOR = 'Moderator', 'Модер'
+    OPERATOR = 'Operator', 'Оператор'
     READER = 'Reader', 'Пользователь'
 
 

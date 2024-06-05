@@ -1,19 +1,11 @@
-from rest_framework import permissions, viewsets, status
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.parsers import JSONParser
+
 from .serializers import UserSerializer
 from django.http import Http404
 from .models import User
 
-
-# class UserViewSet(viewsets.ModelViewSet):
-#     """
-#     API endpoint that allows users to be viewed or edited.
-#     """
-#     queryset = User.objects.all().order_by('-date_joined')
-#     serializer_class = UserSerializer
-#     permission_classes = [permissions.IsAuthenticated]
 
 class UserList(APIView):
     def get(self, request, format=None):
