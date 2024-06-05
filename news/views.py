@@ -36,29 +36,47 @@ class ForModeration(viewsets.ModelViewSet):
         serializer = self.get_serializer(list, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=['GET', 'PUT'], permission_classes=[permissions.IsAuthenticated])
     def redact(self, request, *args, **kwargs):
         pk = kwargs.get("pk", None)
         instance = News.objects.get(pk=pk)
 
-        serializer = NewsSerializer(data=request.data, instance=instance)
+        try:
+            news = News.objects.get(pk=pk)
+        except News.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
-        # instance.update_redact(status=NewsStatus.Moderation)
+        news.status = NewsStatus.Moderation
+        news.save()
 
-        if serializer.is_valid():
-            # serializer.save()
-            return Response({"post": " Вроде норм"})
-        else:
-            return Response({"post": pk})
+        return Response({"новый статус": news.status}, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=['put'])
+    @action(detail=True, methods=['GET', 'PUT'], permission_classes=[permissions.IsAuthenticated])
     def moderation(self, request, *args, **kwargs):
-        if request.user.UserRole == "Moderator":
-            pass
-        pass
+        pk = kwargs.get("pk", None)
+        instance = News.objects.get(pk=pk)
 
-    @action(detail=True, methods=['put'], )
+        try:
+            news = News.objects.get(pk=pk)
+        except News.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        news.status = NewsStatus.Moderation
+        news.save()
+
+        return Response({"новый статус": news.status}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['GET', 'PUT'], permission_classes=[permissions.IsAuthenticated])
     def publication(self, request, *args, **kwargs):
-        if request.user.UserRole == "Reader":
-            pass
-        pass
+        pk = kwargs.get("pk", None)
+        instance = News.objects.get(pk=pk)
+
+        try:
+            news = News.objects.get(pk=pk)
+        except News.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        news.status = NewsStatus.Moderation
+        news.save()
+
+        return Response({"новый статус": news.status}, status=status.HTTP_200_OK)
