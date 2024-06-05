@@ -5,7 +5,7 @@ from rest_framework.parsers import JSONParser
 from django_filters import rest_framework as filters
 from rest_framework.decorators import action
 
-from .models import News
+from .models import *
 from .serializers import NewsSerializer
 from .filters import NewsFilter
 from users.custompermission import *
@@ -15,6 +15,7 @@ from django.http import Http404
 class NewsViewFilter(viewsets.ModelViewSet):
     queryset = News.objects.all()
     serializer_class = NewsSerializer
+
     filterset_class = NewsFilter
     filter_backends = (filters.DjangoFilterBackend,)
 
@@ -35,12 +36,14 @@ class ForModeration(viewsets.ModelViewSet):
         serializer = self.get_serializer(list, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['get', 'put'], )#permissions=(IOperator,)
-    def do_for_moder(self, request, *args, **kwargs):
+    @action(detail=True, methods=['get'])
+    def redact(self, request, *args, **kwargs):
         pk = kwargs.get("pk", None)
         instance = News.objects.get(pk=pk)
 
-        serializer = NewsSerializer(data=request.data, instance=instance) #
+        serializer = NewsSerializer(data=request.data, instance=instance)
+
+        # instance.update_redact(status=NewsStatus.Moderation)
 
         if serializer.is_valid():
             # serializer.save()
@@ -48,14 +51,14 @@ class ForModeration(viewsets.ModelViewSet):
         else:
             return Response({"post": pk})
 
-    @action(detail=True, methods=['get', 'put'], ) # permissions=(IModerator,)
-    def do_for_post(self, request, *args, **kwargs):
+    @action(detail=True, methods=['put'])
+    def moderation(self, request, *args, **kwargs):
         if request.user.UserRole == "Moderator":
             pass
         pass
 
-    @action(detail=True, methods=['get', 'put'], ) # permissions=(IOReader,)
-    def do_post(self, request, *args, **kwargs):
+    @action(detail=True, methods=['put'], )
+    def publication(self, request, *args, **kwargs):
         if request.user.UserRole == "Reader":
             pass
         pass
