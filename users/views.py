@@ -22,9 +22,10 @@ class UserList(APIView):
 
 
 class UserDetail(APIView):
-    def get_object(self, pk):
+    def get_object(self, pk: str) -> User:
         try:
             user = User.objects.get(pk=pk)
+            return user
         except User.DoesNotExist:
             raise Http404
 
