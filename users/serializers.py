@@ -1,7 +1,7 @@
 from email.headerregistry import Group
+from users.models import User
 
 from rest_framework import serializers
-from users.models import User
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):

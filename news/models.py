@@ -3,17 +3,16 @@ from django.db import models
 from users.models import *
 
 
-# Create your models here.
+class NewsStatus(models.IntegerChoices):
+    Draft = (1, 'Черновик')
+    Moderation = (2, 'На модерации')
+    ReadyPublication = (3, 'Готов к публикации')
+    Publish = (4, 'Опубликован')
+
 
 class News(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
-
-    class NewsStatus(models.IntegerChoices):
-        Draft = (1, 'Черновик')
-        Moderation = (2, 'На модерации')
-        ReadyPublication = (3, 'Готов к публикации')
-        Publish = (4, 'Опубликован')
 
     status = models.IntegerField(
         choices=NewsStatus.choices,
